@@ -8,6 +8,7 @@ export default function Home() {
         <title>Next.js × Nexus Todo App</title>
       </Head>
       <p>
+        nice
         Get <a href="https://www.electronjs.org/apps/graphql-playground">GraphQL PLayground</a> and point it
         at /api/graphql.
       </p>
