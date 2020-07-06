@@ -1,12 +1,13 @@
-import { GetServerSideProps, GetServerSidePropsContext } from 'next'
+// import { GetServerSideProps, GetServerSidePropsContext } from 'next'
 import Head from 'next/head'
-import { useQuery } from '@apollo/client'
-import { initializeApollo } from '../apollo/apolloClient'
-import TODO from '../documents/todo.query'
+// import { useQuery } from '@apollo/client'
+// import { initializeApollo } from '../apollo/apolloClient'
+import { isServer } from '../apollo/apolloClient'
+// import TODO from '../documents/todo.query'
 import Layout from '../components/layout'
 
 export default function Home() {
-  const { data } = useQuery(TODO)
+  // const { data } = useQuery(TODO)
 
   return (
     <Layout>
@@ -18,32 +19,38 @@ export default function Home() {
         at /api/graphql.
       </p>
       <p>
-        And the vercel url is <span>{process.env.VERCEL_URL}</span>{' '}
+        And the vercel url is <span>{process.env.VERCEL_URL}</span>
       </p>
       <p>
-        And the fallback url is <span>{process.env.NEXT_PUBLIC_YUM_SERVER_URL}</span>{' '}
+        And the fallback url is <span>{process.env.NEXT_PUBLIC_YUM_SERVER_URL}</span>
       </p>
-      <p>Here are your todos</p>
-      <ol>
+      <p>
+        Was this rendered on the server <span>{isServer() ? 'YES': 'NO'}</span>
+      </p>
+      <p>
+        And constructed url is <span>{isServer() ? `https://localhost:${process.env.PORT}/api/graphql`: `https://${window?.location?.host}/api/graphql`}</span>
+      </p>
+      {/* <p>Here are your todos</p> */}
+      {/* <ol>
         {data.todos.map(({ description }) => (
           <li key={description}>{description}</li>
         ))}
-      </ol>
+      </ol> */}
     </Layout>
   )
 }
 
-export const getServerSideProps: GetServerSideProps = async (context: GetServerSidePropsContext) => {
-  const apolloClient = initializeApollo(null)
+// export const getServerSideProps: GetServerSideProps = async (context: GetServerSidePropsContext) => {
+//   const apolloClient = initializeApollo(null)
 
-  await apolloClient.query({
-    query: TODO,
-  })
+//   await apolloClient.query({
+//     query: TODO,
+//   })
 
-  return {
-    props: {
-      initialApolloState: apolloClient.cache.extract(),
-      unstable_revalidate: 1,
-    },
-  }
-}
+//   return {
+//     props: {
+//       initialApolloState: apolloClient.cache.extract(),
+//       unstable_revalidate: 1,
+//     },
+//   }
+// }

@@ -5,9 +5,9 @@ import { ApolloClient, HttpLink, InMemoryCache, NormalizedCacheObject, from } fr
 let apolloClient: ApolloClient<NormalizedCacheObject | InMemoryCache> | null = null
 export const isServer = () => typeof window === 'undefined'
 const backUpServerUrl = isServer() ? process.env.NEXT_PUBLIC_YUM_SERVER_URL : `${window.location.host}/api/graphql`
-export const serverURL = process.env.VERCEL_URL || backUpServerUrl
+export const serverURL =  backUpServerUrl
 
-function createApolloClient(serverAccessToken = ''): ApolloClient<NormalizedCacheObject | InMemoryCache> {
+function createApolloClient(): ApolloClient<NormalizedCacheObject | InMemoryCache> {
   const cache = new InMemoryCache()
   const client = new ApolloClient({
     ssrMode: isServer(),
