@@ -15,6 +15,7 @@
     "deploy:prod": "now --prod"
   },
   "dependencies": {
+    "@apollo/client": "^3.0.0-rc.10",
     "next": "9.4.4",
     "nexus": "0.25.0",
     "nexus-plugin-prisma": "0.16.1",
