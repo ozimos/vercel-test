@@ -16,3 +16,8 @@ schema.queryType({
     t.crud.todos()
   },
 })
+ schema.mutationType({
+   definition(t){
+     t.crud.createOneTodo()
+   }
+ })
