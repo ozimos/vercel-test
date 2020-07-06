@@ -14,6 +14,10 @@ The `JSON` scalar type represents JSON objects as specified by [ECMA-404](http:/
 """
 scalar Json
 
+type Mutation {
+  createOneTodo(data: TodoCreateInput!): Todo!
+}
+
 type Query {
   todos(after: TodoWhereUniqueInput, before: TodoWhereUniqueInput, first: Int, last: Int): [Todo!]!
 }
@@ -21,6 +25,10 @@ type Query {
 type Todo {
   description: String!
   id: Int!
+}
+
+input TodoCreateInput {
+  description: String!
 }
 
 input TodoWhereUniqueInput {
