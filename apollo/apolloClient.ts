@@ -1,27 +1,25 @@
 import { useMemo } from 'react'
 import { ApolloClient, HttpLink, InMemoryCache, NormalizedCacheObject, from } from '@apollo/client'
 
-
 let apolloClient: ApolloClient<NormalizedCacheObject | InMemoryCache> | null = null
 export const isServer = () => typeof window === 'undefined'
-const backUpServerUrl = isServer() ? process.env.NEXT_PUBLIC_YUM_SERVER_URL : `${window.location.host}/api/graphql`
-export const serverURL = process.env.VERCEL_URL || backUpServerUrl
-
-function createApolloClient(serverAccessToken = ''): ApolloClient<NormalizedCacheObject | InMemoryCache> {
+const graphPath = '/api/graphql'
+const fallbackURL = `${process.env.NEXT_PUBLIC_YUM_SERVER_URL}${graphPath}`
+const getServerURL = () => process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}${graphPath}` : fallbackURL
+const getClientURL = () => `${window.location.protocol}://${window.location.host}${graphPath}` || fallbackURL
+function createApolloClient(): ApolloClient<NormalizedCacheObject | InMemoryCache> {
   const cache = new InMemoryCache()
   const client = new ApolloClient({
     ssrMode: isServer(),
     // @ts-ignore
-    link: from([ createHttpLink()]),
+    link: from([createHttpLink()]),
     cache,
   })
   // @ts-ignore
   return client
 }
 
-export function initializeApollo(
-  initialState: NormalizedCacheObject | InMemoryCache | null = null,
-) {
+export function initializeApollo(initialState: NormalizedCacheObject | InMemoryCache | null = null) {
   const _apolloClient = apolloClient ?? createApolloClient()
 
   // If your page has Next.js data fetching methods that use Apollo Client, the initial state
@@ -37,17 +35,14 @@ export function initializeApollo(
 }
 
 export function useApollo(initialState: any) {
-  const store = useMemo(() => initializeApollo(initialState), [
-    initialState,
-  ])
+  const store = useMemo(() => initializeApollo(initialState), [initialState])
   return store
 }
 
 function createHttpLink() {
+  const remoteURL = isServer() ? getServerURL() : getClientURL()
   return new HttpLink({
-    uri: `${serverURL}/api/graphql`,
+    uri: remoteURL,
     credentials: 'same-origin',
-    fetch,
   })
 }
-
