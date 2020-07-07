@@ -16,9 +16,11 @@
   },
   "dependencies": {
     "@apollo/client": "^3.0.0-rc.10",
+    "cookie": "^0.4.1",
     "next": "9.4.4",
     "nexus": "0.25.0",
     "nexus-plugin-prisma": "0.16.1",
+    "node-mocks-http": "^1.8.1",
     "react": "16.13.1",
     "react-dom": "16.13.1"
   },

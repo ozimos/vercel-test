@@ -1,26 +1,30 @@
 import { useMemo } from 'react'
-import { ApolloClient, HttpLink, InMemoryCache, NormalizedCacheObject, from } from '@apollo/client'
+import { ApolloClient, InMemoryCache, NormalizedCacheObject, from } from '@apollo/client'
+import { NextPageContext } from 'next'
+import {isServer} from './common'
+import createIsomorphLink from './serverLink'
 
 let apolloClient: ApolloClient<NormalizedCacheObject | InMemoryCache> | null = null
-export const isServer = () => typeof window === 'undefined'
-const graphPath = '/api/graphql'
-const fallbackURL = `${process.env.NEXT_PUBLIC_YUM_SERVER_URL}${graphPath}`
-const getServerURL = () => process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}${graphPath}` : fallbackURL
-const getClientURL = () => `${window.location.protocol}://${window.location.host}${graphPath}` || fallbackURL
-function createApolloClient(): ApolloClient<NormalizedCacheObject | InMemoryCache> {
+
+function createApolloClient(
+  context: Partial<NextPageContext>
+): ApolloClient<NormalizedCacheObject | InMemoryCache> {
   const cache = new InMemoryCache()
   const client = new ApolloClient({
     ssrMode: isServer(),
     // @ts-ignore
-    link: from([createHttpLink()]),
+    link: from([createIsomorphLink(context)]),
     cache,
   })
   // @ts-ignore
   return client
 }
 
-export function initializeApollo(initialState: NormalizedCacheObject | InMemoryCache | null = null) {
-  const _apolloClient = apolloClient ?? createApolloClient()
+export function initializeApollo(
+  initialState: NormalizedCacheObject | InMemoryCache | null = null,
+  context: Partial<NextPageContext> = null
+) {
+  const _apolloClient = apolloClient ?? createApolloClient(context)
 
   // If your page has Next.js data fetching methods that use Apollo Client, the initial state
   // gets hydrated here
@@ -39,10 +43,4 @@ export function useApollo(initialState: any) {
   return store
 }
 
-function createHttpLink() {
-  const remoteURL = isServer() ? getServerURL() : getClientURL()
-  return new HttpLink({
-    uri: remoteURL,
-    credentials: 'same-origin',
-  })
-}
+

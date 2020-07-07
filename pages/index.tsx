@@ -34,7 +34,8 @@ export default function Home() {
 }
 
 export const getServerSideProps: GetServerSideProps = async (context: GetServerSidePropsContext) => {
-  const apolloClient = initializeApollo(null)
+
+  const apolloClient = initializeApollo(null, context)
 
   await apolloClient.query({
     query: TODO,
