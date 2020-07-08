@@ -1,9 +1,8 @@
 import { NextPageContext } from 'next'
 import { ApolloLink, Operation, FetchResult, Observable, HttpLink } from '@apollo/client'
 import { ClientRequest, ServerResponse } from 'http'
-import { EventEmitter } from 'events'
+import MockRes from 'mock-res'
 import cookie from 'cookie'
-import httpMocks from 'node-mocks-http'
 import { isServer, getServerURL, getClientURL } from './common'
 
 export namespace NexusHandler {
@@ -43,32 +42,21 @@ export class NexusHandlerLink extends ApolloLink {
   public request({ query, variables }: Operation): Observable<FetchResult> | null {
     this.req.body = { query: query.loc.source.body, variables }
     return new Observable<FetchResult>((observer) => {
-      new Promise((resolve, reject) => {
-        try {
-          let body = []
-          let stringBody = ''
-          this.res.on('data', chunk => {body.push(chunk)})
-          .on('end', function (chunk) {
-            body.push(chunk)
-            // stringBody = Buffer.concat(body).toString()
-            this.body2 = body
-            resolve(stringBody)
-          })
-          this.handler(this.req, this.res)
-        } catch (error) {
-          reject(error)
-        }
-      })
-        // Promise.resolve(this.handler(this.req, this.res))
-        .then((data) => {
-          console.dir(data)
-          console.dir(this.res.body)
-          console.dir(this.res.body2)
-          console.dir(this.res.error)
-          console.log('getData', this.res._getData())
-          console.log('encoding', this.res.getEncoding())
+      Promise.resolve(this.handler(this.req, this.res))
+        .then(() => {
+          const result = JSON.parse(
+            Buffer.concat(
+              this.res.outputData
+                .filter(({ data }) => {
+                  return data instanceof Buffer
+                })
+                .map(({ data }) => data)
+            ).toString()
+          )
+          // const result = this.res._getJSON()
+          console.log('getData', result)
           if (!observer.closed) {
-            observer.next(data)
+            observer.next(result)
             observer.complete()
           }
         })
@@ -91,14 +79,12 @@ export default function createIsomorphLink(context: Partial<NextPageContext>) {
 
     app.assemble()
 
-    
     const req: any = {
       method: 'POST',
       headers: context?.req?.headers,
     }
-    // const res = new ServerResponse({...req})
-    const res = httpMocks.createResponse({ eventEmitter: EventEmitter, req: {...req} })
-    // const res = context?.res
+    // const res = new MockRes()
+    const res = new ServerResponse({...req})
     const cookies = cookie.parse(context.req?.headers?.cookie || '')
 
     req.cookies = cookies

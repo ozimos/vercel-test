@@ -25,7 +25,7 @@ export default function Home() {
       </p>
       <p>Here are your todos</p>
       <ol>
-        {data.todos.map(({ description }) => (
+        {data?.todos?.map(({ description }) => (
           <li key={description}>{description}</li>
         ))}
       </ol>
@@ -34,16 +34,19 @@ export default function Home() {
 }
 
 export const getServerSideProps: GetServerSideProps = async (context: GetServerSidePropsContext) => {
+  // const apolloClient = initializeApollo(null, context)
 
-  const apolloClient = initializeApollo(null, context)
+  // await apolloClient.query({
+  //   query: TODO,
+  // })
+  // console.log('success', apolloClient.cache.extract())
 
-  await apolloClient.query({
-    query: TODO,
-  })
-
+  const serverExec = require('../graphql/serverExec').default
+  const initialApolloState = await serverExec(TODO, context)
   return {
     props: {
-      initialApolloState: apolloClient.cache.extract(),
+      initialApolloState,
+      // initialApolloState: apolloClient.cache.extract(),
       unstable_revalidate: 1,
     },
   }
