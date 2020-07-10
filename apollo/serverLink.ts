@@ -72,7 +72,7 @@ export class NexusHandlerLink extends ApolloLink {
 
 export default function createIsomorphLink(context: Partial<NextPageContext>) {
   if (isServer() && context) {
-    if (process.env.NODE_ENV === 'development') require('nexus').default.reset()
+    // if (process.env.NODE_ENV === 'development') require('nexus').default.reset()
 
     const app = require('nexus').default
     require('../graphql/schema')

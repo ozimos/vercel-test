@@ -1,13 +1,15 @@
 import { ServerResponse } from 'http'
 import cookie from 'cookie'
+// import MockRes from 'mock-res'
 
 export default async function serverExec(queryDocument, context) {
-  if (process.env.NODE_ENV === 'development') require('nexus').default.reset()
+//   if (process.env.NODE_ENV === 'development') require('nexus').default.reset()
 
   const app = require('nexus').default
   require('./schema')
 
   app.assemble()
+
   const req: any = {
     method: 'POST',
     headers: context?.req?.headers,
@@ -15,12 +17,15 @@ export default async function serverExec(queryDocument, context) {
       query: queryDocument.loc.source.body,
     },
   }
+
   // const res = new MockRes()
   const res = new ServerResponse({ ...req })
   const cookies = cookie.parse(context.req?.headers?.cookie || '')
   req.cookies = cookies
   req.res = res
+
   const response = await app.server.handlers.graphql(req, res)
+
   // const result = res._getJSON()
   const result = JSON.parse(
     Buffer.concat(
@@ -32,5 +37,6 @@ export default async function serverExec(queryDocument, context) {
         .map(({ data }) => data)
     ).toString()
   )
+  console.log(result)
   return { ROOT_QUERY: { __typename: 'Query', ...result.data } }
 }

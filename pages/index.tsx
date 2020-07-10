@@ -39,14 +39,15 @@ export const getServerSideProps: GetServerSideProps = async (context: GetServerS
   // await apolloClient.query({
   //   query: TODO,
   // })
-  // console.log('success', apolloClient.cache.extract())
+  // const initialApolloState = apolloClient.cache.extract()
 
   const serverExec = require('../graphql/serverExec').default
   const initialApolloState = await serverExec(TODO, context)
+
+  // console.log('success', apolloClient.cache.extract())
   return {
     props: {
       initialApolloState,
-      // initialApolloState: apolloClient.cache.extract(),
       unstable_revalidate: 1,
     },
   }
