@@ -3,7 +3,6 @@ import cookie from 'cookie'
 // import MockRes from 'mock-res'
 
 export default async function serverExec(queryDocument, context) {
-//   if (process.env.NODE_ENV === 'development') require('nexus').default.reset()
 
   const app = require('nexus').default
   require('./schema')

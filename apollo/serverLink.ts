@@ -54,7 +54,7 @@ export class NexusHandlerLink extends ApolloLink {
             ).toString()
           )
           // const result = this.res._getJSON()
-          console.log('getData', result)
+          console.dir(result)
           if (!observer.closed) {
             observer.next(result)
             observer.complete()
@@ -72,8 +72,6 @@ export class NexusHandlerLink extends ApolloLink {
 
 export default function createIsomorphLink(context: Partial<NextPageContext>) {
   if (isServer() && context) {
-    // if (process.env.NODE_ENV === 'development') require('nexus').default.reset()
-
     const app = require('nexus').default
     require('../graphql/schema')
 
@@ -84,7 +82,7 @@ export default function createIsomorphLink(context: Partial<NextPageContext>) {
       headers: context?.req?.headers,
     }
     // const res = new MockRes()
-    const res = new ServerResponse({...req})
+    const res = new ServerResponse({ ...req })
     const cookies = cookie.parse(context.req?.headers?.cookie || '')
 
     req.cookies = cookies

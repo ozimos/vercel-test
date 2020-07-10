@@ -34,17 +34,17 @@ export default function Home() {
 }
 
 export const getServerSideProps: GetServerSideProps = async (context: GetServerSidePropsContext) => {
-  // const apolloClient = initializeApollo(null, context)
+  const apolloClient = initializeApollo(null, context)
 
-  // await apolloClient.query({
-  //   query: TODO,
-  // })
-  // const initialApolloState = apolloClient.cache.extract()
+  await apolloClient.query({
+    query: TODO,
+  })
+  const initialApolloState = apolloClient.cache.extract()
 
-  const serverExec = require('../graphql/serverExec').default
-  const initialApolloState = await serverExec(TODO, context)
+  // const serverExec = require('../graphql/serverExec').default
+  // const initialApolloState = await serverExec(TODO, context)
 
-  // console.log('success', apolloClient.cache.extract())
+  console.log('success', initialApolloState)
   return {
     props: {
       initialApolloState,
